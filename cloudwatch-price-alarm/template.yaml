@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: cloudwatch price alarm'
+
+Parameters:
+  Email:
+    Type: String
+
+Resources:
+  Topic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: "price-alarm-topic"
+  Subscription:
+    Type: AWS::SNS::Subscription
+    Properties: 
+      Endpoint: !Ref Email
+      Protocol: email
+      TopicArn: !Ref Topic
+  Alarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties: 
+      AlarmDescription: "AWS te va a empezar a cobrar :("
+      AlarmName: "Alarma de precio de AWS"
+      Namespace: AWS/Billing
+      MetricName: EstimatedCharges
+      Dimensions:
+        - Name: Currency
+          Value: USD
+      Statistic: Maximum
+      Period: 21600
+      EvaluationPeriods: 1
+      Threshold: 0
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions: 
+        - !Ref Topic
+      InsufficientDataActions:
+        - !Ref Topic
