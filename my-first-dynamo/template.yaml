@@ -1,36 +1,36 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 
-Description: 'DynamoDB Table creation'
+Description: "DynamoDB Table creation"
 
 Parameters:
   DynamoTableName:
-      Type: String
+    Type: String
   DynamoAttributeHash:
-      Type: String
+    Type: String
   DynamoAttributeRange:
-      Type: String
+    Type: String
 
 Resources:
   DynamoSinceZero:
-      Type: AWS::DynamoDB::Table
-      Properties: 
-        TableName: !Ref DynamoTableName
-        BillingMode: PAY_PER_REQUEST
-        AttributeDefinitions: 
-          - AttributeName: !Ref DynamoAttributeHash
-            AttributeType: S
-          - AttributeName: !Ref DynamoAttributeRange
-            AttributeType: S
-        KeySchema: 
-          - AttributeName: !Ref DynamoAttributeHash
-            KeyType: HASH
-          - AttributeName: !Ref DynamoAttributeRange
-            KeyType: RANGE
-        SSESpecification: 
-          SSEEnabled: true
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref DynamoTableName
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: !Ref DynamoAttributeHash
+          AttributeType: S
+        - AttributeName: !Ref DynamoAttributeRange
+          AttributeType: S
+      KeySchema:
+        - AttributeName: !Ref DynamoAttributeHash
+          KeyType: HASH
+        - AttributeName: !Ref DynamoAttributeRange
+          KeyType: RANGE
+      SSESpecification:
+        SSEEnabled: true
 
 Outputs:
   DynamoTableName:
-      Value: !Ref DynamoSinceZero
-      Export:
-          Name: DynamoTableName
+    Value: !Ref DynamoSinceZero
+    Export:
+      Name: DynamoTableName
