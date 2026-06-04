@@ -1,38 +1,48 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: cloudwatch price alarm'
+Description: "AWS Monthly Budget Notification"
 
 Parameters:
   Email:
     Type: String
+    Description: "Email address to receive budget notifications"
 
 Resources:
-  Topic:
-    Type: AWS::SNS::Topic
+  MyMonthlyBudget:
+    Type: "AWS::Budgets::Budget"
     Properties:
-      TopicName: "price-alarm-topic"
-  Subscription:
-    Type: AWS::SNS::Subscription
-    Properties:
-      Endpoint: !Ref Email
-      Protocol: email
-      TopicArn: !Ref Topic
-  Alarm:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      AlarmDescription: "AWS te va a empezar a cobrar :("
-      AlarmName: "Alarma de precio de AWS"
-      Namespace: AWS/Billing
-      MetricName: EstimatedCharges
-      Dimensions:
-        - Name: Currency
-          Value: USD
-      Statistic: Maximum
-      Period: 21600
-      EvaluationPeriods: 1
-      Threshold: 0
-      ComparisonOperator: GreaterThanThreshold
-      AlarmActions:
-        - !Ref Topic
-      InsufficientDataActions:
-        - !Ref Topic
+      Budget:
+        BudgetName: !Sub "monthly-budget-${AWS::StackName}"
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit:
+          Amount: 5
+          Unit: USD
+      NotificationsWithSubscribers:
+        # Notificación al 40% del gasto REAL (2 USD)
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 40
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref Email
+        # Notificación al 80% del gasto REAL (4 USD)
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 80
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref Email
+        # Notificación al 80% del gasto PRONOSTICADO (Forecasted)
+        - Notification:
+            NotificationType: FORECASTED
+            ComparisonOperator: GREATER_THAN
+            Threshold: 80
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref Email
